@@ -146,6 +146,10 @@ void cpu_governor (const char* rule) {
 
 string get_pwr_state () {
     ifstream pstate("/var/lib/pwr_state");
+
+    // Default if we can't read the file.
+    if (!pstate.is_open()) return "perform";
+    
     string result;
     pstate >> result;
     pstate.close();
