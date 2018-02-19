@@ -3,8 +3,8 @@ project (Pwr)
 
 set (CMAKE_CXX_STANDARD 11)
 
-set (Pwr_VERSION_MAJOR 0)
-set (Pwr_VERSION_MINOR 1)
+set (Pwr_VERSION_MAJOR 1)
+set (Pwr_VERSION_MINOR 0)
 
 # configure a header file to pass some of the CMake settings
 # to the source code
