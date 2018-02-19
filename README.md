@@ -30,6 +30,13 @@ If you don't want your display manager to restart, add the `-n` flag on the end 
 
 ## Building and Installing
 
+### From Binary Releases
+
+Check out the [Releases](https://github.com/emctague/pwr/releases).
+You can either run the `.sh`-based installer (a self-extracting archive) as root, *or* unpack the .tar.Z file and install its contents manually.
+
+### From Source
+
 Ensure you have `git` and `cmake` installed, as well as an appropriate C++ compiler such as `g++`.
 
 ```
@@ -41,6 +48,9 @@ cmake ..
 make
 make install
 ```
+
+You can also download a tarball of the latest release and use that
+instead of the git repo.
 
 ## Copyright and License
 
