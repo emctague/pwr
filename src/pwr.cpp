@@ -59,6 +59,9 @@ void prime_select (const char* card);  // Uses prime-select to switch GPUs.
 void wifi_power (const char* state);   // Set wifi power-saving state.
 void cpu_governor (const char* rule);  // Set performance governor.
 
+string get_pwr_state ();                  // Get the power state info.
+void set_pwr_state (const char* state); // Save the power state info.
+
 // Actions that may be performed by the program, depending on flags given.
 int action_none ();       // No action specified, print error and exit.
 int action_perform ();    // Enable performance mode.
@@ -141,6 +144,24 @@ void cpu_governor (const char* rule) {
     globfree(&results);
 }
 
+string get_pwr_state () {
+    ifstream pstate("/var/lib/pwr_state");
+
+    // Default if we can't read the file.
+    if (!pstate.is_open()) return "perform";
+    
+    string result;
+    pstate >> result;
+    pstate.close();
+    return result;
+}
+
+void set_pwr_state (const char* state) {
+    ofstream pstate("/var/lib/pwr_state");
+    pstate << state << endl;
+    pstate.close();
+}
+
 int action_none () {
     cerr << "No action specified" << endl;
     cerr << "Run `" << flags.program_name << " --help` for help." << endl;
@@ -155,6 +176,8 @@ int action_perform () {
     wifi_power("off");
     restart_display_manager();
 
+    set_pwr_state("perform");
+
     seteuid(ruid);
     return E_OK;
 }
@@ -167,8 +190,21 @@ int action_powersave () {
     wifi_power("on");
     restart_display_manager();
 
+    set_pwr_state("powersave");
+
     seteuid(ruid);
     return E_OK;
+}
+
+int action_query () {
+    cout << get_pwr_state() << endl;
+    return E_OK;
+}
+
+int action_toggle () {
+    string state = get_pwr_state();
+    if (state == "powersave") return action_perform();
+    else return action_powersave();
 }
 
 int action_version () {
@@ -205,6 +241,12 @@ int parse_args (int argc, char** argv) {
         
         else if (arg == "powersave" || arg == "ps")
             flags.action = action_powersave;
+
+        else if (arg == "query" || arg == "qu")
+            flags.action = action_query;
+        
+        else if (arg == "toggle" || arg == "to")
+            flags.action = action_toggle;
         
         else if (arg == "--help")
             flags.action = action_help;
