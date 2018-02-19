@@ -6,9 +6,9 @@ for all changes to take effect.
 
 ## What it switches (if available):
 
-* CPU Performance Governor
+* CPU Performance Governor (`powersave` vs. `performance`)
 * NVIDIA PRIME GPU (`intel` vs. `nvidia`)
-* Wireless card power-saving state
+* Wireless card power-saving state (`on` vs. `off`)
 
 ## Usage
 
