@@ -71,6 +71,7 @@ int action_help ();       // Print help information.
 
 int parse_args (int argc, char** argv); // Parse cmdline args and set appropriate flags.
 
+
 int main (int argc, char** argv) {
     ruid = geteuid();
 
@@ -79,6 +80,7 @@ int main (int argc, char** argv) {
 
     return flags.action();
 }
+
 
 bool binary_exists (const char* path) {
     struct stat status;
@@ -110,6 +112,7 @@ const char* wlan_name () {
     else return NULL;
 
 }
+
 
 void restart_display_manager () {
     if (!flags.no_restart && binary_exists("/bin/systemctl"))
@@ -144,6 +147,7 @@ void cpu_governor (const char* rule) {
     globfree(&results);
 }
 
+
 string get_pwr_state () {
     ifstream pstate("/var/lib/pwr_state");
 
@@ -161,6 +165,7 @@ void set_pwr_state (const char* state) {
     pstate << state << endl;
     pstate.close();
 }
+
 
 int action_none () {
     cerr << "No action specified" << endl;
@@ -227,6 +232,7 @@ int action_help () {
     cout << " --norestart (-n)  Do not restart display manager after changing modes." << endl;
     return E_OK;
 }
+
 
 int parse_args (int argc, char** argv) {
     flags.action = action_none;
