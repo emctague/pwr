@@ -121,14 +121,14 @@ void restart_display_manager () {
 
 void prime_select (const char* card) {
     if (binary_exists("/usr/bin/prime-select"))
-        fexecl("/usr/bin/prime-select", "prime-select", card, NULL);
+        fexecl("/usr/bin/prime-select", "prime-select", card);
 }
 
 void wifi_power (const char* state) {
     const char* iface = wlan_name();
 
     if (binary_exists("/sbin/iwconfig") && iface != NULL)
-        fexecl("/sbin/iwconfig", "iwconfig", iface, "power", state, NULL);
+        fexecl("/sbin/iwconfig", "iwconfig", iface, "power", state);
     
     free((void*)iface);
 }
