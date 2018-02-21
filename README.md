@@ -24,7 +24,20 @@ To switch to power-saving mode:
 pwr powersave
 ```
 
-You can also use the shorthand `pe` for performance and `ps` for power-saving.
+To toggle:
+
+```
+pwr toggle
+```
+
+And to check the current state (gives `perform` or `powersave`):
+
+```
+pwr query
+```
+
+You can also use the shorthand `pe` for performance, `ps` for power-saving, `to` for
+toggle, and `qu` for query.
 
 If you don't want your display manager to restart, add the `-n` flag on the end of the command.
 
@@ -33,11 +46,13 @@ If you don't want your display manager to restart, add the `-n` flag on the end 
 ### From Binary Releases
 
 Check out the [Releases](https://github.com/emctague/pwr/releases).
-You can either run the `.sh`-based installer (a self-extracting archive) as root, *or* unpack the .tar.Z file and install its contents manually.
+You can either run the `.sh`-based installer (a self-extracting archive) as root, *or* unpack the .tar.gz file and install its contents manually. Be aware that the installer
+and tarball don't automatically set the script as `setuid` - you may have to add the `+s`
+flag manually.
 
 ### From Source
 
-Ensure you have `git` and `cmake` installed, as well as an appropriate C++ compiler such as `g++`.
+Ensure you have `git` and `cmake` installed, as well as an appropriate C compiler such as `gcc`.
 
 ```
 git clone https://github.com/emctague/pwr

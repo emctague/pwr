@@ -258,6 +258,8 @@ static int action_help () {
     puts("Actions:");
     puts(" perform (pe)      Go into performance mode.");
     puts(" powersave (ps)    Go into power-saving mode.");
+    puts(" toggle (to)       Toggles the current state.");
+    puts(" query (qu)        Query the current state, prints 'perform' or 'powersave'.");
     puts(" --help            Prints this help information.");
     puts(" --version         Prints version, contact, and copyright information.\n");
     puts("Flags:");
