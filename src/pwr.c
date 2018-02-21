@@ -52,8 +52,8 @@ static int ruid;
 
 // All cmdline flags after parsing.
 struct s_flags {
-    const char* program_name;        // argv[0]
-    int (*action)();            // Action for program to perform.
+    const char* program_name;  // argv[0]
+    int (*action)();           // Action for program to perform.
     int no_restart;            // Flag: disables restarting of display manager.
 };
 
