@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (Pwr)
+project (Pwr C)
 
 set (CMAKE_CXX_STANDARD 11)
 
@@ -15,7 +15,7 @@ configure_file (
 
 include_directories ("${PROJECT_BINARY_DIR}")
 
-add_executable (pwr src/pwr.cpp)
+add_executable (pwr src/pwr.c)
 
 install (
   TARGETS pwr DESTINATION bin
