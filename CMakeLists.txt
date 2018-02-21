@@ -1,8 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 project (Pwr C)
 
-set (CMAKE_CXX_STANDARD 11)
-
 set (Pwr_VERSION_MAJOR 1)
 set (Pwr_VERSION_MINOR 0)
 

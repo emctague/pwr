@@ -17,13 +17,16 @@
 
 #include <config.h>
 
-// Run execl() in a new thread and wait for it to complete.
+// Run execl() in a new forked process and wait for it to complete.
 #define fexecl(...) \
-    {\
-        int pid, status;\
-        if ((pid = fork()) == 0)\
-            execl(__VA_ARGS__, NULL);\
-        else waitpid(pid, &status, 0);\
+    { \
+        int pid, status; \
+        pid = fork(); \
+        ehandle(pid == -1, E_FORK_FAILED); \
+        if (pid == 0) \
+            execl(__VA_ARGS__, (char*)NULL); \
+        else \
+            waitpid(pid, &status, 0); \
     }
 
 // Handle an error.
@@ -40,7 +43,8 @@ enum errors {
     E_BAD_ARG,
     E_CPUFREQ_WRITE,
     E_PWR_STATE_WRITE,
-    E_PWR_STATE_READ
+    E_PWR_STATE_READ,
+    E_FORK_FAILED
 };
 
 // Regular User ID
@@ -91,13 +95,13 @@ int main (int argc, char** argv) {
 }
 
 
-int binary_exists (const char* path) {
+static int binary_exists (const char* path) {
     struct stat status;
     if (stat(path, &status) < 0) return 0;
     return status.st_mode & S_IEXEC != 0;
 }
 
-const char* wlan_name () {
+static const char* wlan_name () {
     struct ifaddrs* iface;
     getifaddrs(&iface);
     struct ifaddrs* first = iface;
@@ -123,17 +127,17 @@ const char* wlan_name () {
 }
 
 
-void restart_display_manager () {
+static void restart_display_manager () {
     if (!flags.no_restart && binary_exists("/bin/systemctl"))
         fexecl("/bin/systemctl", "systemctl", "restart", "display-manager");
 }
 
-void prime_select (const char* card) {
+static void prime_select (const char* card) {
     if (binary_exists("/usr/bin/prime-select"))
         fexecl("/usr/bin/prime-select", "prime-select", card);
 }
 
-void wifi_power (const char* state) {
+static void wifi_power (const char* state) {
     const char* iface = wlan_name();
 
     if (binary_exists("/sbin/iwconfig") && iface != NULL)
@@ -142,7 +146,7 @@ void wifi_power (const char* state) {
     free((void*)iface);
 }
 
-void cpu_governor (const char* rule) {
+static void cpu_governor (const char* rule) {
     glob_t results = { 0 };
 
     glob("/sys/devices/system/cpu/cpu*/cpufreq/scaling_governor", 0, glob_error, &results);
@@ -158,7 +162,7 @@ void cpu_governor (const char* rule) {
 }
 
 
-const char* get_pwr_state () {
+static const char* get_pwr_state () {
     FILE* pstate = fopen("/var/lib/pwr_state", "r");
     ehandle(pstate == NULL, E_PWR_STATE_READ);
 
@@ -175,7 +179,7 @@ const char* get_pwr_state () {
     return result;
 }
 
-void set_pwr_state (const char* state) {
+static void set_pwr_state (const char* state) {
     FILE* pstate = fopen("/var/lib/pwr_state", "w");
     ehandle(pstate == NULL, E_PWR_STATE_WRITE);
     fprintf(pstate, "%s\n", state);
@@ -194,13 +198,13 @@ static int glob_error (const char* path, int error) {
 }
 
 
-int action_none () {
+static int action_none () {
     fprintf(stderr, "No action specified\n");
     fprintf(stderr, "Run `%s` --help` for help.\n", flags.program_name);
     return E_NO_ACTION;
 }
 
-int action_perform () {
+static int action_perform () {
     seteuid(0);
 
     cpu_governor("performance");
@@ -214,7 +218,7 @@ int action_perform () {
     return E_OK;
 }
 
-int action_powersave () {
+static int action_powersave () {
     seteuid(0);
 
     cpu_governor("powersave");
@@ -228,19 +232,19 @@ int action_powersave () {
     return E_OK;
 }
 
-int action_query () {
+static int action_query () {
     puts(get_pwr_state());
     return E_OK;
 }
 
-int action_toggle () {
+static int action_toggle () {
     const char* state = get_pwr_state();
     if (!strcmp(state, "powersave")) return action_perform();
     else return action_powersave();
     free((void*)state);
 }
 
-int action_version () {
+static int action_version () {
     puts("pwr v" S_Pwr_VERSION "\n");
     puts("Copyright 2018 Ethan McTague.");
     puts("Licensed under the MIT License.");
@@ -248,7 +252,7 @@ int action_version () {
     return E_OK;
 }
 
-int action_help () {
+static int action_help () {
     puts("pwr - Switches between performance and power-saving modes.");
     printf("Usage: %s [action] [flags]\n", flags.program_name);
     puts("Actions:");
@@ -262,7 +266,7 @@ int action_help () {
 }
 
 
-int parse_args (int argc, char** argv) {
+static int parse_args (int argc, char** argv) {
     flags.action = action_none;
     flags.program_name = argv[0];
     flags.no_restart = 0;
