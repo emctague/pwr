@@ -192,7 +192,7 @@ static int glob_error (const char* path, int error) {
     if (path)
         fprintf(stderr, "glob: %s: %s\n", path, strerror(error));
     else
-        fprintf(stderr,"glob: %s\n", strerror(error));
+        fprintf(stderr, "glob: %s\n", strerror(error));
 
     return 0;
 }
